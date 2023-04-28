@@ -31,6 +31,7 @@ async function setIssueStatus(issueId, statusId, item, oldContainer, oldIndex) {
     const response = await fetch(`${getUriWithDashboard()}/set_issue_status/${issueId}/${statusId}`);
     if (!response.ok) {
         oldContainer.insertBefore(item, oldContainer.childNodes[oldIndex + 1]);
+        alert(await response.json());
     }
 }
 

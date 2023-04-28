@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class DashboardController < ApplicationController
+
   def index
     @use_drop_down_menu = Setting.plugin_dashboard['use_drop_down_menu']
     @selected_project_id = params[:project_id].nil? ? -1 : params[:project_id].to_i
@@ -18,12 +19,18 @@ class DashboardController < ApplicationController
     status_id = params[:status_id].to_i
 
     issue = Issue.find(issue_id)
-
     if issue.new_statuses_allowed_to.select { |item| item.id == status_id }.any?
       issue.init_journal(User.current)
       issue.status_id = status_id
-      issue.save
-      head :ok
+      if issue.save
+        head :ok
+      else
+        # byebug
+        # head :forbidden
+        messages = Array.wrap(issue).map {|object| object.errors.full_messages}.flatten
+        render json: messages, status: :forbidden
+        # head :forbidden
+      end
     else
       head :forbidden
     end
@@ -50,7 +57,7 @@ class DashboardController < ApplicationController
       :color => '#4ec7ff'
     }}
 
-    Project.visible.each do |item|
+    Project.visible.active.each do |item|
       data[item.id] = {
         :name => item.name,
         :color => Setting.plugin_dashboard["project_color_" + item.id.to_s]
@@ -78,8 +85,11 @@ class DashboardController < ApplicationController
       project = Project.find(project_id)
       add_children_ids(id_array, project)
     end
-
-    items = id_array.empty? ? Issue.visible : Issue.visible.where(:projects => {:id => id_array})
+    # byebug
+    # @query.issues
+    @query = IssueQuery.new(:name => "_")
+    # @query.project = @project
+    items = id_array.empty? ? @query.issues(limit: 500) : @query.issues(:projects => {:id => id_array}, :limit => 500)
 
     unless Setting.plugin_dashboard['display_closed_statuses']
       items = items.open
@@ -96,6 +106,6 @@ class DashboardController < ApplicationController
         :executor => item.assigned_to.nil? ? '' : item.assigned_to.name
       }
     end
-    data.sort_by { |item| item[:created_on] }
+    data.sort_by { |item| item[:created_on] }.reverse
   end
 end
