@@ -103,7 +103,8 @@ class DashboardController < ApplicationController
         :project_id => item.project.id,
         :created_on => item.created_on,
         :author => item.author.name(User::USER_FORMATS[:firstname_lastname]),
-        :executor => item.assigned_to.nil? ? '' : item.assigned_to.name
+        :executor => item.assigned_to.nil? ? '' : item.assigned_to.name,
+        :due_date => item.due_date
       }
     end
     data.sort_by { |item| item[:created_on] }.reverse

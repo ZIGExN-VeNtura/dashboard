@@ -31,7 +31,9 @@ async function setIssueStatus(issueId, statusId, item, oldContainer, oldIndex) {
     const response = await fetch(`${getUriWithDashboard()}/set_issue_status/${issueId}/${statusId}`);
     if (!response.ok) {
         oldContainer.insertBefore(item, oldContainer.childNodes[oldIndex + 1]);
-        alert(await response.json());
+        
+        $('#drag-result-modal').html(`<p>${await response.json()}</p>`);
+        $('#drag-result-modal').dialog('open');
     }
 }
 
@@ -52,6 +54,18 @@ function init(useDragAndDrop) {
     }
 
     document.querySelector("#content").style.overflow = "hidden"; 
+
+    $('#drag-result-modal').dialog({
+      autoOpen: false,
+      show: {
+        effect: "blind",
+        duration: 100
+      },
+      hide: {
+        effect: "explode",
+        duration: 100
+      }
+    });
 
     if (useDragAndDrop) {
         document.querySelectorAll('.status_column_closed_issues, .status_column_issues').forEach(item => {

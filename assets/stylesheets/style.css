@@ -111,6 +111,11 @@
     padding-left: 10px;
 	padding-right: 10px;
 	font-size: small;
+	display: inline-block
+}
+
+.status_column_issues .issue_card span.issue_card_header_date > span {
+	padding: 0;
 }
 
 .issue_card:hover {
