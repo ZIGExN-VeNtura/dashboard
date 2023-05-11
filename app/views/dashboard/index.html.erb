@@ -31,7 +31,7 @@
 
 <div class="issues_container">
 	<% @statuses.each do |status_id, status| %>
-		<div class="status_column" data-id="<%= status_id %>">
+		<div class="status_column" data-id="<%= status_id %>" data-color="<%= status[:color] %>" data-name="<%= status[:name]%>">
 			<div class="status_column_header" style="border-bottom-color: <%= status[:color] %>">
 				<span> <%= status[:name] %> </span>
 			</div>
@@ -39,6 +39,7 @@
 				<% @issues.select { |issue| issue[:status_id] == status_id }.each do |issue| %>
 					<% project_color = @projects[issue[:project_id]][:color] %>
 					<% project_name = @projects[issue[:project_id]][:name] %>
+					
 					<div class="issue_card" style="border-color: <%= project_color %>" data-id="<%= issue[:id] %>" onclick="goToIssue(<%= issue[:id] %>)">
 						<span class="issue_card_id"> <%= "#" + issue[:id].to_s %> </span>
 						<div class="issue_card_header">
@@ -64,6 +65,10 @@
 						<% else %>
 							<span class="issue_card_executor"><i class="bi bi-hammer"></i> <%= issue[:executor] %> </span>
 						<% end %>
+
+						<% status_journal = @status_journals.select { |jounal| jounal.journalized_id === issue[:id] }.first %>
+						<% status_duration = status_journal ? distance_of_time_in_words(status_journal.created_on, Time.now) : distance_of_time_in_words(issue[:created_on], Time.now) %>
+						<span class="issue_status_duration"> This issue was set <span class="status" style="color: <%= status[:color] %>"><%= status[:name] %></span> status in <span class="duration" style="color: <%= status[:color] %>"><%= status_duration %></span></span>
 					</div>
 				<% end %>
 			</div>

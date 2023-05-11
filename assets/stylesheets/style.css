@@ -118,6 +118,15 @@
 	padding: 0;
 }
 
+.status_column_issues .issue_card span.issue_status_duration {
+	margin-bottom: 10px;
+}
+
+.status_column_issues .issue_card span.issue_status_duration > span {
+	font-weight: 600;
+	padding: 0;
+}
+
 .issue_card:hover {
 	background-color: rgb(220, 220, 220);
 	cursor: pointer;

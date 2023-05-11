@@ -12,6 +12,7 @@ class DashboardController < ApplicationController
     @statuses = get_statuses
     @projects = get_projects
     @issues = get_issues(@selected_project_id, show_sub_tasks)
+    @status_journals = get_status_journals_by_issues(@issues)
   end
 
   def set_issue_status
@@ -108,5 +109,13 @@ class DashboardController < ApplicationController
       }
     end
     data.sort_by { |item| item[:created_on] }.reverse
+  end
+
+  def get_status_journals_by_issues(issues)
+    issue_ids = issues.map { |item| item[:id] }
+    statusJournals = Journal.includes(:details).where(journal_details: { prop_key: 'status_id' }).
+    where(journalized_id: issue_ids).
+    where(journalized_type: 'Issue').
+    order(created_on: :desc)
   end
 end
