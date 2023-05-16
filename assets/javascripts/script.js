@@ -15,8 +15,14 @@ function getUriWithDashboard() {
 }
 
 function goToIssue(id) { 
-    const baseUri = getUriWithoutDashboard();
-    location.href = `${baseUri}/issues/${id}`;
+    // const baseUri = getUriWithoutDashboard();
+    // location.href = `${baseUri}/issues/${id}`;
+    // $('#edit-modal').dialog('open');
+
+    $.ajax({
+        url: '/dashboard/issues/' + id,
+        method: 'GET',
+    });
 }
 
 function chooseProject(projectId) {
@@ -69,6 +75,12 @@ function init(useDragAndDrop) {
         effect: "explode",
         duration: 100
       }
+    });
+
+    $('#edit-modal').dialog({
+        autoOpen: false,
+        width:'auto',
+        modal: true,
     });
 
     if (useDragAndDrop) {

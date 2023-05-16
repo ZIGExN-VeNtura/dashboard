@@ -1,0 +1,139 @@
+<div>
+    <%= labelled_form_for @issue, :html => {:id => 'issue-form', :multipart => true} do |f| %>
+        <div id="error_message_modal">
+        </div>
+
+        <input type="hidden" name="id" value="<%= @issue.id %>" />
+
+        <div class="box">
+            <% if @issue.attributes_editable? %>
+                <fieldset class="tabular">
+                    <legend><%= l(:label_change_properties) %></legend>
+                    <div id="all_attributes">
+                        <%= labelled_fields_for :issue, @issue do |f| %>
+                            <%= call_hook(:view_issues_form_details_top, { :issue => @issue, :form => f }) %>
+                            <%= hidden_field_tag 'form_update_triggered_by', '' %>
+                            <%= hidden_field_tag 'back_url', params[:back_url], :id => nil if params[:back_url].present? %>
+
+                            <% if @issue.safe_attribute? 'is_private' %>
+                                <p id="issue_is_private_wrap">
+                                <%= f.check_box :is_private, :no_label => true %><label class="inline" for="issue_is_private" id="issue_is_private_label"><%= l(:field_is_private) %></label>
+                                </p>
+                            <% end %>
+
+                            <% if (@issue.safe_attribute?('project_id') || @issue.project_id_changed?) && (!@issue.new_record? || @project.nil? || @issue.copy?) %>
+                                <p><%= f.select :project_id, project_tree_options_for_select(@issue.allowed_target_projects, :selected => @issue.project), {:required => true},
+                                                :onchange => "updateIssueFrom('#{escape_javascript update_issue_form_path(@project, @issue)}', this)" %></p>
+                            <% end %>
+
+                            <% if @issue.safe_attribute? 'tracker_id' %>
+                                <p><%= f.select :tracker_id, trackers_options_for_select(@issue), {:required => true},
+                                                :onchange => "updateIssueFrom('#{escape_javascript update_issue_form_path(@project, @issue)}', this)" %></p>
+                            <% end %>
+
+                            <% if @issue.safe_attribute? 'subject' %>
+                                <p><%= f.text_field :subject, :size => 80, :maxlength => 255, :required => true %></p>
+                            <% end %>
+
+                            <% if @issue.safe_attribute? 'description' %>
+                                <p>
+                                    <%= f.label_for_field :description, :required => @issue.required_attribute?('description') %>
+                                    <%= link_to_function content_tag(:span, l(:button_edit), :class => 'icon icon-edit'), '$(this).hide(); $("#issue_description_and_toolbar").show()' unless @issue.new_record? %>
+                                    <%= content_tag 'span', :id => "issue_description_and_toolbar", :style => (@issue.new_record? ? nil : 'display:none') do %>
+                                        <%= f.text_area :description,
+                                                    :cols => 60,
+                                                    :rows => [[10, @issue.description.to_s.length / 50].max, 20].min,
+                                                    :accesskey => accesskey(:edit),
+                                                    :class => 'wiki-edit',
+                                                    :no_label => true %>
+                                    <% end %>
+                                </p>
+                                <%= wikitoolbar_for 'issue_description' %>
+                            <% end %>
+
+                            <div id="attributes" class="attributes">
+                               <div id="attributes" class="attributes">
+                                    <%= render :partial => 'dashboard/modal_form/attributes' %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+                </fieldset>
+            <% end %>
+
+            <% if @issue.notes_addable? %>
+                <fieldset><legend><%= l(:field_notes) %></legend>
+                    <%= f.text_area :notes, :cols => 60, :rows => 10, :class => 'wiki-edit', :no_label => true %>
+                    <%= wikitoolbar_for 'issue_notes' %>
+                </fieldset>
+            <% end %>
+        </div>
+    
+        <div style="display: flex; justify-content: center">
+            <%= f.hidden_field :lock_version %>
+            <%= hidden_field_tag 'last_journal_id', params[:last_journal_id] || @issue.last_journal_id %>
+            <%= submit_tag l(:button_submit) %>
+            | <%= link_to l(:button_cancel), '#', id: 'edit-modal-close-btn' %>
+        </div>
+    <% end %>
+</div>
+
+<div class="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+<style>
+.ui-widget-overlay {
+   background: #AAA url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x;
+   opacity: .30;
+   filter: Alpha(Opacity=30);
+}
+
+#edit-modal #all_attributes > p {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+#edit-modal  #all_attributes > p > label {
+    margin-right: 10px;
+}
+
+#edit-modal .attributes p {
+    display: flex;
+    margin-bottom: 10px !important;
+}
+
+#edit-modal .attributes p > label {
+    margin-right: 10px;
+}
+
+#edit-modal #error_message_modal p {
+    color: red;
+    margin-bottom: 10px;
+}
+.loader-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
