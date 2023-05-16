@@ -14,11 +14,7 @@ function getUriWithDashboard() {
     return `${baseUri}/dashboard`;
 }
 
-function goToIssue(id) { 
-    // const baseUri = getUriWithoutDashboard();
-    // location.href = `${baseUri}/issues/${id}`;
-    // $('#edit-modal').dialog('open');
-
+function goToIssue(id) {
     $.ajax({
         url: '/dashboard/issues/' + id,
         method: 'GET',
@@ -66,15 +62,15 @@ function init(useDragAndDrop) {
     document.querySelector("#content").style.overflow = "hidden"; 
 
     $('#drag-result-modal').dialog({
-      autoOpen: false,
-      show: {
-        effect: "blind",
-        duration: 100
-      },
-      hide: {
-        effect: "explode",
-        duration: 100
-      }
+        autoOpen: false,
+        show: {
+            effect: "blind",
+            duration: 100
+        },
+        hide: {
+            effect: "explode",
+            duration: 100
+        }
     });
 
     $('#edit-modal').dialog({
