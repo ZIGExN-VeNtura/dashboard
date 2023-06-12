@@ -111,6 +111,20 @@
     padding-left: 10px;
 	padding-right: 10px;
 	font-size: small;
+	display: inline-block
+}
+
+.status_column_issues .issue_card span.issue_card_header_date > span {
+	padding: 0;
+}
+
+.status_column_issues .issue_card span.issue_status_duration {
+	margin-bottom: 10px;
+}
+
+.status_column_issues .issue_card span.issue_status_duration > span {
+	font-weight: 600;
+	padding: 0;
 }
 
 .issue_card:hover {
@@ -197,4 +211,56 @@
 
 .status_column_issues .issue_card .issue_card_id {
     display: none;
+}
+
+.ui-widget-overlay {
+    opacity: .30;
+}
+
+#edit-modal #all_attributes > p {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+#edit-modal  #all_attributes > p > label {
+    margin-right: 10px;
+}
+
+#edit-modal .attributes p {
+    display: flex;
+    margin-bottom: 10px !important;
+}
+
+#edit-modal .attributes p > label {
+    margin-right: 10px;
+}
+
+#edit-modal #error_message_modal p {
+    color: red;
+    margin-bottom: 10px;
+}
+.loader-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

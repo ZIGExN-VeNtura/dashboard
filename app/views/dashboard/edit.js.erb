@@ -1,0 +1,45 @@
+$('#edit-modal').dialog('option',  'title', "#<%= @issue.id %> - <%= @issue.subject %>");
+$('#edit-modal').html("<%= escape_javascript(render partial: 'dashboard/edit_modal') %>")
+$('#edit-modal').dialog('open');
+$('#edit-modal-close-btn').on('click', function(e) {
+    e.preventDefault();
+    $('#edit-modal').dialog('close');
+})
+
+$('#issue-form').on('submit', function(e) {
+    e.preventDefault();
+
+    let data = $(this).serialize();
+    const id = $('#issue-form').find('input[name="id"]').val();
+
+    $('#error_message_modal').html('');
+    $('.loader-wrapper').css('display', 'flex');
+    $.ajax({
+        url: '/dashboard/issues/' + id,
+        method: 'PATCH',
+        dataType: "json",
+        data 
+    })
+    .done(() => {
+        console.log('dont');
+        window.location.reload();
+    })
+    .fail((xhr, status, err) => {
+        let htmlError = '';
+        if (xhr.status) {
+            const response = JSON.parse(xhr.responseText)
+            htmlError = response.messages.reduce((result, message) => {
+                return result += `<p>${message}</p>`;
+            }, '')
+        } else {
+            htmlError = 'Save Issue Error';
+        }
+        $('#error_message_modal').html(htmlError);
+
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $("#error_message_modal").offset().top
+        }, 2000);
+
+        $('.loader-wrapper').css('display', 'none');
+    });
+});
